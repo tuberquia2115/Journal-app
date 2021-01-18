@@ -9,7 +9,9 @@ export const startGoogleLogin = () => {
         const authLoginProvider = new firebase.auth.GoogleAuthProvider();
         fb.auth.signInWithPopup(authLoginProvider).then((result) => {
             const { user } = result;
-            dispatch(login(user.uid, user.displayName))
+            console.log(user)
+            dispatch(login(user.uid, user.displayName));
+            dispatch(registerUserFirestore(user.email, user.displayName, user.uid, user.photoURL));
         }).catch(error => {
             console.log(error)
         })
@@ -24,8 +26,10 @@ export const startRegisterWithEmailPasswordName = (email, password, name) => {
         fb.auth.createUserWithEmailAndPassword(email, password)
             .then(async ({ user }) => {
                 await user.updateProfile({ displayName: name });
-                dispatch(login(user.uid, user.displayName))
-                dispatch(registerUserFirestore(user.email, user.displayName, user.uid))
+                dispatch(login(user.uid, user.displayName));
+
+                dispatch(registerUserFirestore(user.email, user.displayName, user.uid, user.photoURL));
+
                 dispatch(finishLoading())
 
             })
@@ -36,11 +40,12 @@ export const startRegisterWithEmailPasswordName = (email, password, name) => {
     }
 }
 
-const registerUserFirestore = async (email, name, uid) => {
+const registerUserFirestore = async (email, name, uid, photo = '') => {
     const obj = {
         email,
         name,
-        uid
+        uid,
+        photoURL: photo
     }
     await fb.db
         .collection("users")

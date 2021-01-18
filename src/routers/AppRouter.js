@@ -14,7 +14,7 @@ export const AppRouter = () => {
     const [cheking, setCheking] = useState(true);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const dispatch = useDispatch();
-    console.log("HOLA MUNGO DE GIT");
+
     useEffect(() => {
         fb.auth.onAuthStateChanged((user) => {
             if (user?.uid) {
